@@ -6,10 +6,24 @@ var axios = require('axios');
 
 module.exports = {
     fetchPopularRepos: function(language){ // the method takes a language and performs a axios GET request
-        var encodedURI = window.encodeURI('https://api.github.com/search/repositories?q=stars>1+language:' + language + '&sort=stars&order=desc&type=Repositories');
+        var encodedURI = window.encodeURI('https://api.github.com/search/repositories?q=stars:>1+language:'+ language + '&sort=stars&order=desc&type=Repositories');
         return axios.get(encodedURI).then(function(response){
             //console.log(response); // response is an object which gets returned
             return response.data.items;
         })
     }
 }
+
+
+// var axios = require('axios');
+
+// module.exports = {
+//   fetchPopularRepos: function (language) {
+//     var encodedURI = window.encodeURI('https://api.github.com/search/repositories?q=stars:>1+language:'+ language + '&sort=stars&order=desc&type=Repositories');
+
+//     return axios.get(encodedURI)
+//       .then(function (response) {
+//         return response.data.items;
+//       });
+//   }
+// };
