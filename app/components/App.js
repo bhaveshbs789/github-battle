@@ -7,6 +7,7 @@ var Nav = require('./Nav');
 var BrowserRouter = require('react-router-dom').BrowserRouter;
 var Home = require('./Home');
 var Battle = require('./Battle');
+var Switch = ReactRouter.Switch;
 // var createBrowserHistory = require('react-router-dom').createBrowserHistory;
 
 class App extends React.Component {
@@ -15,9 +16,14 @@ class App extends React.Component {
             <BrowserRouter>
                 <div className='container'>
                     <Nav />
-                    <Route exact path='/' component={Home} />
-                    <Route path='/battle' component={Battle} />
-                    <Route path='/popular' component={Popular} />
+                    <Switch>
+                        <Route exact path='/' component={Home} />
+                        <Route path='/battle' component={Battle} />
+                        <Route path='/popular' component={Popular} />
+                        <Route render={function(){
+                            return <h3>You are LOST...</h3>
+                        }} />
+                    </Switch>
                 </div>
             </BrowserRouter>
             
