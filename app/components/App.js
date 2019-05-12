@@ -8,6 +8,7 @@ var BrowserRouter = require('react-router-dom').BrowserRouter;
 var Home = require('./Home');
 var Battle = require('./Battle');
 var Switch = ReactRouter.Switch;
+var Results = require('./Results');
 // var createBrowserHistory = require('react-router-dom').createBrowserHistory;
 
 class App extends React.Component {
@@ -20,6 +21,7 @@ class App extends React.Component {
                         <Route exact path='/' component={Home} />
                         <Route exact path='/battle' component={Battle} />
                         <Route path='/popular' component={Popular} />
+                        <Route path='/battle/results' component={Results} />
                         <Route render={function(){
                             return <h3>You are LOST...</h3>
                         }} />
