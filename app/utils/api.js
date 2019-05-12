@@ -9,7 +9,8 @@ var params = "?client_id=" + id + "&client_secret=" + sec;
 function getProfile(username){
     return axios.get('https://api.github.com/users/' + username + params)
         .then(function(user){
-            return username.data;
+            //return username.data;
+            return user.data;
         })
 }
 
@@ -44,11 +45,11 @@ function handleError(error){
 // We use the axios.all function which takes in a array of promises and once all
 // of them are fullfilled then the "then" function is called.
 // axios.all once fullfilled returns a array of the responses .
-function getUserData(){
+function getUserData(player){
     return axios.all([
         getProfile(player),
         getRepos(player)
-    ]).then(function(){
+    ]).then(function(data){
         var profile = data[0];
         var repos = data[1];
         return {
@@ -61,7 +62,7 @@ function getUserData(){
 // the below sortPlayers function takes in a array of players and returns
 // sorted details
 function sortPlayers(players){
-    return players.sort(function(){
+    return players.sort(function(a, b){
         return b.score - a.score;
     })
 }
