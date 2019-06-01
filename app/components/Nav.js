@@ -1,8 +1,8 @@
-var React = require('react');
+import React from 'react';
+import {NavLink} from 'react-router-dom';
 
-var NavLink = require('react-router-dom').NavLink;
 
-function Nav(){
+export default function Nav(){
     return (
         <ul className='nav'>
             <li>
@@ -18,4 +18,4 @@ function Nav(){
     )
 }
 
-module.exports = Nav;
+// export default Nav;

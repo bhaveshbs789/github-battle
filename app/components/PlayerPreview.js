@@ -1,17 +1,17 @@
-var React = require('react');
-var PropTypes = require('prop-types');
+import React from 'react';
+import PropTypes from 'prop-types';
 
-function PlayerPreview(props){
+export default function PlayerPreview({avatar, username, children}){
     return (
         <div>
             <div className='column'>
                 <img className='avatar'
-                    src={props.avatar}
-                    alt={'Avatar for ' + props.username}></img>
-                <h2 className='username'>@{props.username}</h2>
+                    src={avatar}
+                    alt={'Avatar for ' + username}></img>
+                <h2 className='username'>@{username}</h2>
             </div>
             {/* <button className='reset' onClick={props.onReset.bind(null, props.id)}>Reset</button> */}
-            {props.children}
+            {children}
         </div>
     )
 }
@@ -21,4 +21,5 @@ PlayerPreview.propTypes = {
     username:PropTypes.string.isRequired
 }
 
-module.exports = PlayerPreview;
+// module.exports = PlayerPreview;
+// export default PlayerPreview;

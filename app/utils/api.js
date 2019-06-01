@@ -1,37 +1,34 @@
-var React = require('react');
-var axios = require('axios');
+import React from 'react';
+// import axios from 'axios';
 
-var id = "YOUR_CLIENT_ID";
-var sec = "YOUR_CLIENT_SECRET";
-var params = "?client_id=" + id + "&client_secret=" + sec;
+const id = "YOUR_CLIENT_ID";
+const sec = "YOUR_CLIENT_SECRET";
+const params = `?client_id=${id}&client_secret=${sec}`; // Template string
+// Changed the var keyword for the above lines to const as
+// it would not change
 
 // Takes in a username and returns the details fetched from the github api
-function getProfile(username){
-    return axios.get('https://api.github.com/users/' + username + params)
-        .then(function(user){
-            //return username.data;
-            return user.data;
-        })
+async function getProfile(username){
+    const response = await fetch(`https://api.github.com/users/${username}${params}`);
+    //return username.data; Here we also use object destructuring
+    return response.json();
 }
 
 // getRepos takes in a username and returns the repos for that username
-function getRepos(username){
-    return axios.get('https://api.github.com/users/' + username + '/repos' +  params + '&per_page=100');
+async function getRepos(username){
+    const response = await fetch(`https://api.github.com/users/${username}/repos${params}&per_page=100`);
+    return response.json();
 }
 
 // getStarCount returns the starCount for an array of repos passed as a parameter
 function getStarCount(repos){
-    return repos.data.reduce(function(count, repo){
-        return count + repo.stargazers_count;
-    }, 0);
+    return repos.reduce((count, {stargazers_count}) => count + stargazers_count, 0);
 }
 
 // calculateScore function takes in the profile and the user repos
 // and returns the total of the followers times 3 added to totalStars
-function calculateScore(profile, repos){
-    var followers = profile.followers;
-    var totalStars = getStarCount(repos);
-    return (followers * 3) + totalStars;
+function calculateScore({followers}, repos){
+    return (followers * 3) + getStarCount(repos);
 }
 
 // handleError function is to handler any errors which come in the api request
@@ -45,45 +42,56 @@ function handleError(error){
 // We use the axios.all function which takes in a array of promises and once all
 // of them are fullfilled then the "then" function is called.
 // axios.all once fullfilled returns a array of the responses .
-function getUserData(player){
-    return axios.all([
+async function getUserData(player){
+    const [profile, repos] = await Promise.all([
         getProfile(player),
         getRepos(player)
-    ]).then(function(data){
-        var profile = data[0];
-        var repos = data[1];
-        return {
-            profile: profile,
+    ]);
+    
+    return {
+            profile,
             score: calculateScore(profile, repos)
-        }
-    })
+    }
 }
 
 // the below sortPlayers function takes in a array of players and returns
 // sorted details
 function sortPlayers(players){
-    return players.sort(function(a, b){
-        return b.score - a.score;
-    })
+    return players.sort((a, b) => b.score - a.score);
 }
 
 // with module.exports we are only exporting an object which would have some 
 // method and properties
+// ES6 imports and exports syntax
 
-module.exports = {
-    battle: function(players){
-        return axios.all(players.map(getUserData))
-            .then(sortPlayers)
-            .catch(handleError)
-    },
-    fetchPopularRepos: function(language){ // the method takes a language and performs a axios GET request
-        var encodedURI = window.encodeURI('https://api.github.com/search/repositories?q=stars:>1+language:'+ language + '&sort=stars&order=desc&type=Repositories');
-        return axios.get(encodedURI).then(function(response){
-            //console.log(response); // response is an object which gets returned
-            return response.data.items;
-        })
-    }
+export async function battle(players){
+    const results = await Promise.all(players.map(getUserData))
+        .catch(handleError);
+    
+    return results === null
+    ? results
+    : sortPlayers(results)
 }
+
+export async function fetchPopularRepos(language){
+    const encodedURI = window.encodeURI(`https://api.github.com/search/repositories?q=stars:>1+language:${language}&sort=stars&order=desc&type=Repositories`);
+    const response = await fetch(encodedURI).catch(handleError);
+    const repos = await response.json();
+    return repos.items;
+}
+
+// module.exports = {
+//     battle(players){
+//         return Promise.all(players.map(getUserData))
+//             .then(sortPlayers)
+//             .catch(handleError)
+//     },
+//     fetchPopularRepos(language){ // the method takes a language and performs a axios GET request
+//         const encodedURI = window.encodeURI(`https://api.github.com/search/repositories?q=stars:>1+language:${language}&sort=stars&order=desc&type=Repositories`);
+//         return axios.get(encodedURI).then(({data})=> data.items)
+//             //console.log(response); // response is an object which gets returned
+//     }
+// }
 
 
 // var axios = require('axios');
